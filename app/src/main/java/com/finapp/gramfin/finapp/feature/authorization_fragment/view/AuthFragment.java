@@ -27,7 +27,7 @@ import retrofit2.Response;
 public class AuthFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-
+    public static String token;
 
     private AuthPresenter authPresenter;
     @BindView(R.id.emailtv)
@@ -44,16 +44,14 @@ public class AuthFragment extends Fragment {
 
 
     @OnClick(R.id.forgetPasswordtv)
-    public void forgetPassword()
-    {
+    public void forgetPassword() {
         authPresenter.notImplemented();
 
     }
 
 
     @OnClick(R.id.guestAccess)
-    public void guestClick()
-    {
+    public void guestClick() {
         authPresenter.notImplemented();
 
     }
@@ -73,11 +71,12 @@ public class AuthFragment extends Fragment {
                 if (response.code() == 200) {
                     AuthModel authModel = response.body();
                     authPresenter.saveData(email, password, authModel.user.id, authModel.user.token);
+
+                    token = authPresenter.getToken();
+
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
-                }
-                else
-                {
+                } else {
                     authPresenter.wrongData();
 
                 }
@@ -94,7 +93,7 @@ public class AuthFragment extends Fragment {
     @OnClick(R.id.loginViaFB)
     public void loginFB() {
 
-      authPresenter.notImplemented();
+        authPresenter.notImplemented();
 
 
     }
