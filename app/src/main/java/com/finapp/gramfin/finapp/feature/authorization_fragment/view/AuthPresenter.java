@@ -58,6 +58,12 @@ public class AuthPresenter {
         editor.apply();
 
     }
+    public  String getToken(){
+        String token;
+        token = sharedPreferences.getString("token","");
+
+        return token;
+    }
 
     public void wrongData()
     {
