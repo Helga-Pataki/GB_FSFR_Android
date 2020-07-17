@@ -1,5 +1,7 @@
 package com.finapp.gramfin.finapp.feature.second_screen.presenter;
 
+import android.os.Bundle;
+
 import com.finapp.gramfin.finapp.feature.question_viewpager.QuestionViewpagerFragment;
 import com.finapp.gramfin.finapp.feature.second_screen.model.ModelChapter;
 import com.finapp.gramfin.finapp.service.FragmentRouter;
@@ -11,7 +13,6 @@ public class PresenterChapterSelection {
 
     private IFragmentChooseChapter ifragmentChooseChapter;
     private List<ModelChapter> listChapters = new ArrayList<>();
-
 
     public PresenterChapterSelection(IFragmentChooseChapter ifragmentChooseChapter) {
         this.ifragmentChooseChapter = ifragmentChooseChapter;
@@ -54,15 +55,11 @@ public class PresenterChapterSelection {
     }
 
     public void callBackIdModelChapters(int id) {
-        System.out.println("Номер в листе = " + id);
+        int chapterForTraining = id+1;
+        Bundle bundle = new Bundle();
+        bundle.putInt("chapterForTraining",chapterForTraining);
+        FragmentRouter.getInstance().placeFragment(QuestionViewpagerFragment.class, bundle);
 
-        switch (id) {
-            case 0:
-                FragmentRouter.getInstance().placeFragment(QuestionViewpagerFragment.class, null);
-                break;
-            default:
-                FragmentRouter.getInstance().notImplementedToast();
-        }
     }
 
 
