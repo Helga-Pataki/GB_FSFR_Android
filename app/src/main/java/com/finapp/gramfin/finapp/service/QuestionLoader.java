@@ -6,24 +6,29 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.finapp.gramfin.finapp.api.QuestionRepo;
-import com.finapp.gramfin.finapp.api.question_model.DataRecordRestModel;
 import com.finapp.gramfin.finapp.api.question_model.PageRestModel;
+import com.finapp.gramfin.finapp.feature.authorization_fragment.view.AuthFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class QuestionLoader {
 
     public final static String QUESTION_COMPLETE = "OK";
     public final static String QUESTION_NOT_FOUND = "question not found";
     private static QuestionLoader instance = null;
-    private static DataRecordRestModel retrofitDataRecord;
+    //  private static DataRecordRestModel retrofitDataRecord;
     private static boolean requestDone;
-    private int chapter_id, id;
+    private int chapter;
     private OnRequestListener listener;
-    private ArrayList<PageRestModel> pagesCash = new ArrayList<>();
+    private static ArrayList<PageRestModel> pageRestModelList = new ArrayList<>();
+
+    String token = "Bearer " + AuthFragment.token;//переделать на getSharedPreferences()
 
 
-    private QuestionLoader() { }
+    private QuestionLoader() {
+    }
+
 
     public static QuestionLoader getInstance() {
         if (instance == null) {
@@ -32,82 +37,48 @@ public class QuestionLoader {
         return instance;
     }
 
-    private void searchPage(int page, PageRestModel retrofitCurPage) {
-        if (retrofitCurPage != null) {
-            for (DataRecordRestModel item: retrofitCurPage.data) {
-                if (item.chapters_id == chapter_id && item.id == id) {
-                    requestDone = true;
-                    listener.onComplete(item, QUESTION_COMPLETE);
-                    return;
-                }
-            }
 
-            if (retrofitCurPage.last_page > 0 && retrofitCurPage.per_page > 0) {
-                page = id / retrofitCurPage.per_page + ((id % retrofitCurPage.per_page > 0) ? 1 : 0);
-                if (page > retrofitCurPage.last_page) {
-                    requestDone = true;
-                    listener.onComplete(null, QUESTION_NOT_FOUND);
-                    return;
-                }
-            } else page += 1;
-        }
-
-        getPage(page, new OnPageListener() {
-            @Override
-            public void onComplete(PageRestModel result, String error) {
-                if (result != null) searchPage(result.current_page, result);
-                else listener.onComplete(null, error);
-            }
-        });
-    }
-
-    public void getDataRecord(int chapter_id, int id, OnRequestListener listener) {
-        retrofitDataRecord = null; requestDone = false;
-        this.listener = listener;
-        this.chapter_id = chapter_id;
-        this.id = id;
-
-        searchPage(1, null);
-    }
-
-    public void clearCash() {
-        pagesCash.clear();
-    }
-
-    private void getPage(int page, final OnPageListener listener) {
-        for (PageRestModel pageFromCash:pagesCash) {
-            if (pageFromCash.current_page == page) {
-                listener.onComplete(pageFromCash, "from cash");
-                return;
-            }
-        }
-
-        QuestionRepo.getAPI().loadQuestions(page)
-                .enqueue(new Callback<PageRestModel>() {
+    private void loadQuestionsRest(int chapter) {
+        QuestionRepo.getAPI().loadQuestions(chapter,token)
+                .enqueue(new Callback<List<PageRestModel>>() {
                     @Override
-                    public void onResponse(Call<PageRestModel> call, Response<PageRestModel> response) {
+                    public void onResponse(Call<List<PageRestModel>> call, Response<List<PageRestModel>> response) {
                         if (response.isSuccessful()) {
-                            pagesCash.add(response.body());
-                            listener.onComplete(response.body(), response.message());
+
+                            pageRestModelList.addAll(response.body());
+                            listener.onComplete(pageRestModelList, QUESTION_COMPLETE);
+
+                            requestDone = true;
+
                         } else {
                             requestDone = true;
-                            listener.onComplete(null,response.code() + " " + response.message());
+                            listener.onComplete(null, response.code() + " " + response.message());
+
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<PageRestModel> call, Throwable t) {
+                    public void onFailure(Call<List<PageRestModel>> call, Throwable t) {
                         requestDone = true;
-                        listener.onComplete(null, t.toString());
+                        listener.onComplete(null,  t.toString());
                     }
                 });
     }
 
-    public interface OnRequestListener {
-        void onComplete(@Nullable DataRecordRestModel result, String error);
+    public void getDataRecord(int chapter, OnRequestListener listener) {
+        //  pageRestModelList = null;
+        requestDone = false;
+        this.listener = listener;
+        this.chapter = chapter;
+        loadQuestionsRest(chapter);
     }
 
-    public interface OnPageListener {
-        void onComplete(@Nullable PageRestModel result, String error);
+    public void clearCash() {
+        pageRestModelList.clear();
     }
+
+    public interface OnRequestListener {
+        void onComplete(@Nullable List<PageRestModel> result, String error);
+    }
+
 }
