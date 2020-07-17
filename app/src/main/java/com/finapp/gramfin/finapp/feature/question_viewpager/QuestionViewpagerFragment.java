@@ -43,7 +43,9 @@ public class QuestionViewpagerFragment extends Fragment implements IQuestionView
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(R.string.training_title);
         viewPager = view.findViewById(R.id.questionViewpager);
-        presenterQuestionViewpager = new PresenterQuestionViewpager(this);
+        int chapterForTraining = getArguments().getInt("chapterForTraining");
+        presenterQuestionViewpager = new PresenterQuestionViewpager(this, chapterForTraining);
+        viewPager.setOffscreenPageLimit(3);
     }
 
     @Override
