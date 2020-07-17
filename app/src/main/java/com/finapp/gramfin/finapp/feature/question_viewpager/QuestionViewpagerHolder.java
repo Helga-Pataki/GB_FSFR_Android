@@ -95,19 +95,19 @@ public class QuestionViewpagerHolder extends RecyclerView.ViewHolder {
         int i = 0;
         int choice = modelQuestion.getUserChoice();
 
-        for (AnswerRecordRestModel answer:modelQuestion.getAnswers()) {
+        for (ModelQuestion.AnswerVariant answer:modelQuestion.getAnswersList()) {
             int background_res = R.drawable.element_background_answer_cardview;
             boolean checked = false;
 
             if (choice == i) {
                 checked = true;
 
-                if (answer.is_correct == 1) { background_res = R.drawable.element_background_answer_cardview_true; }
+                if (answer.getCorrect() == 1) { background_res = R.drawable.element_background_answer_cardview_true; }
                 else { background_res = R.drawable.element_background_answer_cardview_false; }
             }
 
             TextView view = listChoices.get(i);
-            view.setText(answer.content);
+            view.setText(answer.getAnswerVariant());
 
             CheckBox checkBox = listChoicesCheckboxes.get(i);
             checkBox.setVisibility(View.VISIBLE);
