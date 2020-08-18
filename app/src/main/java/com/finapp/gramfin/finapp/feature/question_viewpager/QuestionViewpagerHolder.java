@@ -12,7 +12,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.finapp.gramfin.finapp.R;
-import com.finapp.gramfin.finapp.api.question_model.data_reqord.AnswerRecordRestModel;
+
 import com.finapp.gramfin.finapp.feature.question_viewpager.model.ModelQuestion;
 import com.finapp.gramfin.finapp.service.FragmentRouter;
 
