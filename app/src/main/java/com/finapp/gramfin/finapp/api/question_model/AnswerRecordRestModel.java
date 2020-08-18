@@ -1,4 +1,4 @@
-package com.finapp.gramfin.finapp.api.question_model.data_reqord;
+package com.finapp.gramfin.finapp.api.question_model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
