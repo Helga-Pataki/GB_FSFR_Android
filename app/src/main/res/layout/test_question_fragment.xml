@@ -41,7 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="66dp"
-            android:layout_marginTop="36dp"
+            android:layout_below="@id/title_number_of_chapter"
+            android:layout_marginTop="6dp"
             android:lines="1"
             android:text="titleNumberOfQuestions"
             android:textColor="@color/colorTextNumberOfQuestions"
@@ -53,7 +54,7 @@
             android:id="@+id/line1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title_number_of_chapter"
+            android:layout_below="@id/title_topic_name"
             android:layout_marginTop="21dp"
             android:background="@color/colorAqua"
             android:orientation="horizontal">
