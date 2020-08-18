@@ -2,7 +2,7 @@ package com.finapp.gramfin.finapp.api;
 
 
 
-import com.finapp.gramfin.finapp.api.chapters_model.ChaptersRestMod1;
+import com.finapp.gramfin.finapp.api.chapters_model.ChapterRestModl;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ import retrofit2.http.Header;
 
 public interface ChaptersAPI {
     @GET("/chapters/")
-    Call<List<ChaptersRestMod1>> loadChapters(@Header("Authorization") String token);
+    Call<List<ChapterRestModl>> loadChapters(@Header("Authorization") String token);
 }

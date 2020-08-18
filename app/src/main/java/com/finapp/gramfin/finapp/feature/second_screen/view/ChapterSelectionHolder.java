@@ -46,7 +46,7 @@ class ChapterSelectionHolder extends RecyclerView.ViewHolder {
         this.id = id;
         numberOfChapter.setText(Integer.toString(1 + id) );
         nameChapter.setText(modelChapter.getChapter());
-        numberOfQuetions.setText("Всего вопросов: " + modelChapter.getNumberOfQuetions());
+        numberOfQuetions.setText("Всего вопросов: " + modelChapter.getTotalOfQuestions());
         textIknow.setText("Знаю: " + modelChapter.getItemIKnow());
         textIdontKnow.setText("Не знаю: " + modelChapter.getItemIdontKnow());
 
