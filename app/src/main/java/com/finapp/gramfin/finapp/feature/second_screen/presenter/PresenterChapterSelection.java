@@ -2,6 +2,9 @@ package com.finapp.gramfin.finapp.feature.second_screen.presenter;
 
 import android.os.Bundle;
 
+import com.finapp.gramfin.finapp.api.ChaptersRepo;
+import com.finapp.gramfin.finapp.api.chapters_model.ChapterRestModl;
+import com.finapp.gramfin.finapp.feature.authorization_fragment.view.AuthFragment;
 import com.finapp.gramfin.finapp.feature.question_viewpager.QuestionViewpagerFragment;
 import com.finapp.gramfin.finapp.feature.second_screen.model.ModelChapter;
 import com.finapp.gramfin.finapp.service.FragmentRouter;
@@ -9,10 +12,18 @@ import com.finapp.gramfin.finapp.service.FragmentRouter;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PresenterChapterSelection {
 
     private IFragmentChooseChapter ifragmentChooseChapter;
     private List<ModelChapter> listChapters = new ArrayList<>();
+    String token = "Bearer " + AuthFragment.token;
+    private List<ChapterRestModl> chapterRESTModelsList = new ArrayList<>();
+
+
 
     public PresenterChapterSelection(IFragmentChooseChapter ifragmentChooseChapter) {
         this.ifragmentChooseChapter = ifragmentChooseChapter;
@@ -20,37 +31,31 @@ public class PresenterChapterSelection {
     }
 
     private void setModelChapters() {
+        ChaptersRepo.getAPI().loadChapters(token) //TODO перенести в лоадер
+                .enqueue(new Callback<List<ChapterRestModl>>() {
+                    @Override
+                    public void onResponse(Call<List<ChapterRestModl>> call, Response<List<ChapterRestModl>> response) {
+                        chapterRESTModelsList.addAll(response.body());
+                        if (chapterRESTModelsList != null) {
+                            for (ChapterRestModl item : chapterRESTModelsList) {
+                                ModelChapter model = new ModelChapter(item.getName(), item.getNumber());
 
-        listChapters.add(new ModelChapter("Рынок ценных бумаг",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Участники рынка ценных бумаг." +
-                " Инфраструктурные организации ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Эмиссия ценных бумаг. Обращение финансовых инструментов ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Институты коллективного инвестирования ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Государственные ценные бумаги. Государственный долг ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Гражданско-правовые основы ведения предпринимательской деятельности ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Корпоративное право ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Регулирование финансового рынка и надзор на финансовом рынке." +
-                " Защита прав и законных интересов инвесторов на финансовом рынке ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Административные правонарушения и уголовные преступления на финансовом рынке ",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Финансовая математика и статистика",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Основы бухгалтерского учета и финансовой отчетности на финансовом рынке",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Налогообложение на финансовом рынке",
-                3, 2, 1));
-        listChapters.add(new ModelChapter("Мировой финансовый рынок",
-                3, 2, 1));
+                                listChapters.add(model);
+                            }
+                        }
 
-        ifragmentChooseChapter.setChapters(listChapters);
+                        ifragmentChooseChapter.setChapters(listChapters);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<ChapterRestModl>> call, Throwable t) {
+
+                        //TODO
+
+                    }
+                });
+
+
 
     }
 
