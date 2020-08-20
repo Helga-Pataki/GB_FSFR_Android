@@ -1,9 +1,13 @@
-package com.finapp.gramfin.finapp.frag_router;
+package com.finapp.gramfin.finapp.service;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -33,15 +37,31 @@ public class FragmentRouter {
         this.fragmentManager = fragmentManager;
     }
 
+    public String getString(int id) {
+        return context.getString(id);
+    }
+
     public void notImplementedToast() {
         Toast.makeText(context, context.getString(R.string.under_construction), Toast.LENGTH_SHORT).show();
     }
+    
+    public void placeFragment(@NonNull Class<?> cls, @Nullable Bundle bundle) {
+        Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(ClassLoader.getSystemClassLoader(), cls.getName());
 
-    public void placeFragment(@NonNull Class<?> cls) {
-        Fragment fragment = Fragment.instantiate(context, cls.getName(),null);
+        if (bundle != null) fragment.setArguments(bundle);
+
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.drawer_layout, fragment, "fragment")
+                .replace(R.id.container_fragments, fragment, "fragment")
                 .addToBackStack(null)
                 .commit();
+    }
+
+
+    public void curtainOn(View dim){
+        dim.setVisibility(View.VISIBLE);
+
+    }
+    public void curtainOff(View dim) {
+        dim.setVisibility(View.GONE);
     }
 }

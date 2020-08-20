@@ -1,20 +1,32 @@
 package com.finapp.gramfin.finapp;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
+
+import com.finapp.gramfin.finapp.feature.favourites.FavouritesFragment;
+import com.finapp.gramfin.finapp.feature.second_screen.view.FragmentChapterSeliction;
+import com.finapp.gramfin.finapp.feature.settings.SettingsFragment;
+import com.finapp.gramfin.finapp.feature.statistics.wrong_answers.WrongAnswersFragment;
+import com.finapp.gramfin.finapp.service.DisposableManager;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.finapp.gramfin.finapp.feature.main_menu_fragment.MainMenuFragment;
 
-import com.finapp.gramfin.finapp.frag_router.FragmentRouter;
+import com.finapp.gramfin.finapp.service.FragmentRouter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -25,16 +37,15 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        initDrawlerMenu(toolbar);
+        initDrawerMenu(toolbar);
 
 
         FragmentRouter.getInstance().setContext(this, getSupportFragmentManager());
-        FragmentRouter.getInstance().placeFragment(MainMenuFragment.class);
+        FragmentRouter.getInstance().placeFragment(MainMenuFragment.class, null);
     }
 
 
-    private void initDrawlerMenu(Toolbar toolbar){
+    private void initDrawerMenu(Toolbar toolbar) {
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -63,8 +74,18 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
 
         MenuItem search = menu.findItem(R.id.action_search);
-        SearchView searchText = (SearchView) search.getActionView();
-        searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        SearchView searchView = (SearchView) search.getActionView();
+        searchView.setOnSearchClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        View back_dim_layout = findViewById(R.id.dim_layout);
+                        FragmentRouter.getInstance().curtainOn(back_dim_layout);
+                    }
+                });
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // TODO: Implement the search submit
@@ -79,6 +100,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        EditText searchSrcText = searchView.findViewById(R.id.search_src_text);
+        searchSrcText.setTextColor(getResources().getColor(R.color.colorSearchText, null));
+        searchSrcText.setHintTextColor(getResources().getColor(R.color.colorSearchTintBlack, null));
+        ImageView searchCloseButton = searchView.findViewById(R.id.search_close_btn);
+        searchCloseButton.setImageResource(R.drawable.search_clr);
+        searchCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View back_dim_layout = findViewById(R.id.dim_layout);
+                FragmentRouter.getInstance().curtainOff(back_dim_layout);
+                searchView.setQuery("", false);
+                searchView.clearFocus();
+                searchView.setIconified(true);
+            }
+        });
+
         return true;
     }
 
@@ -88,39 +125,47 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
 
     @Override
-    public boolean onNavigationItemSelected( MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        Bundle bundle = new Bundle();
+        item.setChecked(true);
 
-        if (id == R.id.nav_home) {
-            FragmentRouter.getInstance().placeFragment(MainMenuFragment.class);
+        if (id == R.id.learning) {
+            bundle.putString(getString(R.string.title_tag), "ИЗУЧЕНИЕ");
+            FragmentRouter.getInstance().placeFragment(FragmentChapterSeliction.class, bundle);
 
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.training) {
+            bundle.putString(getString(R.string.title_tag), "ТРЕНИРОВКА");
+            FragmentRouter.getInstance().placeFragment(FragmentChapterSeliction.class, bundle);
 
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.exam) {
+            FragmentRouter.getInstance().notImplementedToast();
+        } else if (id == R.id.statistics) {
+            FragmentRouter.getInstance().placeFragment(WrongAnswersFragment.class, null);
+        } else if (id == R.id.bookmark) {
+            FragmentRouter.getInstance().placeFragment(FavouritesFragment.class, null);
+        } else if (id == R.id.settings) {
+            FragmentRouter.getInstance().placeFragment(SettingsFragment.class, null);
+        } else if (id == R.id.add_friends) {
+            FragmentRouter.getInstance().notImplementedToast();
+        } else if (id == R.id.write_us) {
+            FragmentRouter.getInstance().notImplementedToast();
+        } else if (id == R.id.exit) {
+            FragmentRouter.getInstance().notImplementedToast();
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        DisposableManager.dispose();
+        super.onDestroy();
+    }
 }
